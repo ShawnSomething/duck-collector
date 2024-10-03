@@ -1,12 +1,16 @@
 import React from 'react';
 import './App.css';
 import { GameBoard } from './game-board';
+import { GameStart } from './game-start';
 
 function App() {
   return (
     <>
       <div>
-        <GameBoard></GameBoard>
+        <GameBoard />
+      </div>
+      <div>
+      <GameStart />
       </div>
     </>
   );
