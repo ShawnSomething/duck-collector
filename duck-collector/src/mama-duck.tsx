@@ -1,46 +1,36 @@
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 
-export const MamaDuck: React.FC<{ ducklings: { left: number; top: number }[] }> = ({ ducklings }) => {
-    const [position, setPosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2})
+export const MamaDuck: React.FC<{ 
+    collectedDucklings: { left: number; top: number }[],
+    setPosition: React.Dispatch<React.SetStateAction<{ x: number, y: number }>>,
+    mamaDuckPosition: { x: number; y: number };
+}> = ({ collectedDucklings, setPosition, mamaDuckPosition }) => {
+    const [position, updatePosition] = useState({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            const { key } = event
-            const speed = 10
+            const { key } = event;
+            const speed = 10;
 
-            if (key === 'w') {
-                setPosition((prev) => ({ ...prev, y: Math.max(0, prev.y - speed) }))
-            } else if (key === 'a') {
-                setPosition((prev) => ({ ...prev, x: Math.max(0, prev.x - speed) }))
-            } else if (key === 's') {
-                setPosition((prev) => ({ ...prev, y: Math.min(window.innerHeight - 50, prev.y + speed) }))
-            } else if (key === 'd') {
-                setPosition((prev) => ({ ...prev, x: Math.min(window.innerWidth - 50, prev.x + speed) }));
-            }
-        }
+            updatePosition((prev) => {
+                let newPosition = { ...prev };
+                if (key === 'w') newPosition = { ...prev, y: Math.max(0, prev.y - speed) };
+                else if (key === 'a') newPosition = { ...prev, x: Math.max(0, prev.x - speed) };
+                else if (key === 's') newPosition = { ...prev, y: Math.min(window.innerHeight - 50, prev.y + speed) };
+                else if (key === 'd') newPosition = { ...prev, x: Math.min(window.innerWidth - 50, prev.x + speed) };
+                return newPosition;
+            });
+        };
 
-        window.addEventListener('keydown', handleKeyDown)
+        window.addEventListener('keydown', handleKeyDown);
         return () => {
-            window.removeEventListener('keydown', handleKeyDown)
-        }
-    }, [])
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
 
     useEffect(() => {
-      const checkCollision = () => {
-        ducklings.forEach((duckling, index) => {
-          const distance = Math.sqrt(
-            Math.pow(duckling.left - position.x, 2) + Math.pow(duckling.top - position.y, 2)
-          )
-          const threshold = 20
-
-          if (distance < threshold) {
-            console.log(`Collision detected with duckling ${index}!`)
-          }
-        })
-      }
-
-      checkCollision()
-    }, [position, ducklings])
+        setPosition(position);
+    }, [position, setPosition]);
 
     return (
         <>
@@ -48,9 +38,21 @@ export const MamaDuck: React.FC<{ ducklings: { left: number; top: number }[] }> 
             style={{
                 left: `${position.x}px`,
                 top: `${position.y}px`,
-                position: 'absolute'
+                position: 'absolute',
             }}>
             </div>
+
+            {collectedDucklings.map((duckling, index) => (
+                <div
+                    key={index}
+                    className="ducklings"
+                    style={{
+                        position: "absolute",
+                        left: `${position.x - 30 * (index + 1)}px`,
+                        top: `${position.y}px`,
+                    }}
+                ></div>
+            ))}
         </>
-    )
-}
+    );
+};
