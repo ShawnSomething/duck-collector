@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
-export const Ducklings: React.FC<{ gameStarted: boolean }> = ({ gameStarted }) => {
-    const [ducklingPositions, setDucklingPositions] = useState<{ left: number; top: number }[]>([]);
+export const Ducklings: React.FC<{ 
+    gameStarted: boolean; 
+    setDucklingPositions: React.Dispatch<React.SetStateAction<{ left: number; top: number }[]>>;
+    ducklingPositions: { left: number; top: number }[];
+}> = ({ gameStarted, setDucklingPositions, ducklingPositions }) => {
 
     const spawnDuckling = () => {
         const ducklingWidth = 20;
@@ -32,11 +35,11 @@ export const Ducklings: React.FC<{ gameStarted: boolean }> = ({ gameStarted }) =
                 clearInterval(interval);
             }
         };
-    }, [gameStarted]);
+    }, [gameStarted, setDucklingPositions]);
 
     return (
         <>
-            {ducklingPositions.map((position, index) => (
+            {ducklingPositions.map((position: { left: number; top: number }, index: number) => (
                 <div
                     key={index}
                     className="ducklings"

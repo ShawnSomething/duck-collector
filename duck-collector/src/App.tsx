@@ -7,6 +7,9 @@ import { Ducklings } from "./ducklings";
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
+  const [ducklingPositions, setDucklingPositions] = useState<
+    { left: number; top: number }[]
+  >([]);
 
   return (
     <>
@@ -17,8 +20,12 @@ function App() {
 
         {gameStarted && (
           <>
-            <MamaDuck />
-            <Ducklings gameStarted={gameStarted} />
+            <MamaDuck ducklings={ducklingPositions} />
+            <Ducklings
+              gameStarted={gameStarted}
+              setDucklingPositions={setDucklingPositions}
+              ducklingPositions={ducklingPositions}
+            />
           </>
         )}
       </div>
