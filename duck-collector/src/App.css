@@ -62,6 +62,19 @@
   font-weight: bold;
   border: 2px solid black;
   border-radius: 50%;
+  position: relative; /* Required for positioning the beak */
+}
+
+.mama-duck::before {
+  content: '';
+  position: absolute;
+  width: 20px; /* Width of the beak */
+  height: 16px; /* Height of the beak */
+  background-color: orange; /* Color of the beak */
+  border-radius: 10px 10px 0 0; /* Make the top corners rounded */
+  left: 50%;
+  top: -14px; /* Adjust position above Mama Duck */
+  transform: translateX(-50%);
 }
 
 .ducklings {
