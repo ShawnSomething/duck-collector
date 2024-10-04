@@ -99,8 +99,8 @@ export const MamaDuck: React.FC<{
                 const angleOffset = (index / collectedDucklings.length) * Math.PI / 2;
                 const distanceFromMama = 45 + (index % 3) * 5; 
           
-                const ducklingX = ducklingPosition.x - distanceFromMama * Math.cos(rotation * (Math.PI / 360)) + distanceFromMama * Math.cos(angleOffset);
-                const ducklingY = ducklingPosition.y - distanceFromMama * Math.sin(rotation * (Math.PI / 360)) + distanceFromMama * Math.sin(angleOffset);
+                const ducklingX = ducklingPosition.x - distanceFromMama * Math.cos(rotation * (Math.PI / 260)) + distanceFromMama * Math.cos(angleOffset);
+                const ducklingY = ducklingPosition.y - distanceFromMama * Math.sin(rotation * (Math.PI / 300)) + distanceFromMama * Math.sin(angleOffset);
 
                 return (
                     <div
