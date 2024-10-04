@@ -3,16 +3,14 @@ import React, { useState, useEffect } from "react";
 export const MamaDuck: React.FC<{ 
     collectedDucklings: { left: number; top: number }[],
     setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>,
-    mamaDuckPosition: { x: number; y: number }; // Pass Mama Duck's position
+    mamaDuckPosition: { x: number; y: number }; 
 }> = ({ collectedDucklings, setPosition, mamaDuckPosition }) => {
     const [position, updatePosition] = useState(mamaDuckPosition);
-    const speed = 4.5; // Control the speed of movement
-
-    // Store currently pressed keys
+    const [history, setHistory] = useState<{ x: number; y: number }[]>([]); 
+    const speed = 4.5; 
     const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set());
-
-    // State for rotation angle
     const [rotation, setRotation] = useState(0);
+    const maxHistoryLength = collectedDucklings.length * 14; 
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -44,7 +42,6 @@ export const MamaDuck: React.FC<{
             let directionX = 0;
             let directionY = 0;
 
-            // Update targetPosition based on the keys currently pressed
             if (keysPressed.has('w')) {
                 targetPosition.y = Math.max(0, position.y - speed);
                 directionY -= 1;
@@ -62,42 +59,48 @@ export const MamaDuck: React.FC<{
                 directionX += 1;
             }
 
-            // Update rotation if there is any movement
             if (directionX !== 0 || directionY !== 0) {
-                // Calculate rotation angle in radians
                 const angle = Math.atan2(directionY, directionX);
-                // Convert to degrees
                 const degrees = angle * (180 / Math.PI);
-                setRotation(degrees + 90); // Adjusting angle for CSS rotation
+                setRotation(degrees + 90); 
             }
 
-            // Update the position
+       
             updatePosition(targetPosition);
-            setPosition(targetPosition); // Update the parent with the new position
+            setPosition(targetPosition);
+            setHistory((prevHistory) => {
+                const updatedHistory = [...prevHistory, targetPosition];
+                if (updatedHistory.length > maxHistoryLength) {
+                    updatedHistory.shift(); 
+                }
+                return updatedHistory;
+            });
 
             requestAnimationFrame(animate);
         };
 
-        // Start the animation loop
         requestAnimationFrame(animate);
-    }, [keysPressed, position, setPosition]);
+    }, [keysPressed, position, setPosition, maxHistoryLength]);
 
     return (
         <>
             <div className="mama-duck"
-            style={{
-                left: `${position.x}px`,
-                top: `${position.y}px`,
-                position: 'absolute',
-                transform: `rotate(${rotation}deg)` 
-            }}>
-        </div>
+                style={{
+                    left: `${position.x}px`,
+                    top: `${position.y}px`,
+                    position: 'absolute',
+                    transform: `rotate(${rotation}deg)` 
+                }}>
+            </div>
 
             {collectedDucklings.map((_, index) => {
-                const angle = (index - (collectedDucklings.length - 1) / 2) * (Math.PI / (collectedDucklings.length + 2));
-                const radius = 30; 
-                const ducklingX = position.x + radius * Math.cos(angle);
-                const ducklingY = position.y + radius * Math.sin(angle);
+                const historyIndex = Math.max(0, history.length - (index + 2.5) * 4);
+                const ducklingPosition = history[historyIndex] || position;
+                const angleOffset = (index / collectedDucklings.length) * Math.PI / 2;
+                const distanceFromMama = 45 + (index % 3) * 5; 
+          
+                const ducklingX = ducklingPosition.x - distanceFromMama * Math.cos(rotation * (Math.PI / 360)) + distanceFromMama * Math.cos(angleOffset);
+                const ducklingY = ducklingPosition.y - distanceFromMama * Math.sin(rotation * (Math.PI / 360)) + distanceFromMama * Math.sin(angleOffset);
 
                 return (
                     <div
@@ -107,6 +110,7 @@ export const MamaDuck: React.FC<{
                             position: "absolute",
                             left: `${ducklingX}px`,
                             top: `${ducklingY}px`,
+                            transform: `rotate(${rotation}deg)`,
                         }}
                     ></div>
                 );
