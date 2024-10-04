@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 
 interface HUDProps {
     collectedCount: number;
+    onTimerTick: (timeLeft: number) => void;
 }
 
-export const HUD: React.FC<HUDProps> = ({ collectedCount }) => {
-    const [timeLeft, setTimeLeft] = useState(300); 
+export const HUD: React.FC<HUDProps> = ({ collectedCount, onTimerTick }) => {
+    const [timeLeft, setTimeLeft] = useState(5); 
 
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null; 
@@ -17,6 +18,8 @@ export const HUD: React.FC<HUDProps> = ({ collectedCount }) => {
         } else {
             clearInterval(timer as unknown as NodeJS.Timeout);
         }
+
+        onTimerTick(timeLeft);
 
         return () => {
             if (timer) {
