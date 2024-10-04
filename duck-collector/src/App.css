@@ -88,3 +88,25 @@
   border: 2px solid black;
   border-radius: 50%;
 }
+
+.hud {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border-radius: 5px;
+  font-size: 18px;
+  z-index: 1000;
+  font-family: sans-serif;
+  display: flex;
+  align-items: center;
+}
+
+.vertical-line {
+  width: 2px;
+  height: 30px;
+  background-color: white;
+  margin: 0 10px;
+}
