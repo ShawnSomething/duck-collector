@@ -49,7 +49,7 @@ function App() {
               mamaDuckPosition={mamaDuckPosition}
             />
             <div>
-              <HUD collectedCount={collectedDucklings.length} timeLeft={0} />
+              <HUD collectedCount={collectedDucklings.length} />
             </div>
           </>
         )}

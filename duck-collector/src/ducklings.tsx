@@ -29,7 +29,7 @@ export const Ducklings: React.FC<{
 
         if (gameStarted) {
             spawnDuckling();
-            interval = setInterval(spawnDuckling, 3500); 
+            interval = setInterval(spawnDuckling, 5000); 
         }
 
         return () => {
