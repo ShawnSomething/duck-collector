@@ -62,18 +62,18 @@
   font-weight: bold;
   border: 2px solid black;
   border-radius: 50%;
-  position: relative; /* Required for positioning the beak */
+  position: relative; 
 }
 
 .mama-duck::before {
   content: '';
   position: absolute;
-  width: 20px; /* Width of the beak */
-  height: 16px; /* Height of the beak */
-  background-color: orange; /* Color of the beak */
-  border-radius: 10px 10px 0 0; /* Make the top corners rounded */
+  width: 20px; 
+  height: 16px; 
+  background-color: orange; 
+  border-radius: 10px 10px 0 0; 
   left: 50%;
-  top: -14px; /* Adjust position above Mama Duck */
+  top: -14px; 
   transform: translateX(-50%);
 }
 
@@ -109,4 +109,38 @@
   height: 30px;
   background-color: white;
   margin: 0 10px;
+}
+
+.wolf {
+  position: relative;
+  width: 0;
+  height: 0;
+  margin: 50px auto;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-top: 50px solid gray;
+}
+
+.wolf::before {
+  content: '';
+  position: absolute;
+  top: -75px;
+  left: -30px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 25px solid gray;
+}
+
+.wolf::after {
+  content: '';
+  position: absolute;
+  top: -75px;
+  left: 0px;
+  width: 0;
+  height: 0;
+  border-left: 15px solid transparent;
+  border-right: 15px solid transparent;
+  border-bottom: 25px solid gray;
 }
