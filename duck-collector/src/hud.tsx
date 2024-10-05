@@ -6,7 +6,7 @@ interface HUDProps {
 }
 
 export const HUD: React.FC<HUDProps> = ({ collectedCount, onTimerTick }) => {
-    const [timeLeft, setTimeLeft] = useState(5); 
+    const [timeLeft, setTimeLeft] = useState(60); 
 
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null; 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import { GameBoard } from "./game-board";
 import { GameStart } from "./game-start";
@@ -20,7 +20,7 @@ function App() {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
   });
-  const [wolfPosition, setWolfPosition] = useState({ left: 0, top: 0 });
+  const [wolfPosition, setWolfPosition] = useState<{ left: number; top: number } | null>(null);
   const [gameEnded, setGameEnded] = useState(false);
 
   const handleCollision = (ducklingIndex: number) => {
@@ -29,9 +29,16 @@ function App() {
       prev.filter((_, index) => index !== ducklingIndex)
     );
     setCollectedDucklings((prev) => [...prev, collectedDuckling]);
-
-    setWolfPosition(collectedDuckling)
   };
+
+  useEffect(() => {
+    if (collectedDucklings.length > 0) {
+      const lastDuckling = collectedDucklings[collectedDucklings.length - 1];
+      setWolfPosition(lastDuckling);  // Set wolf position to the last collected duckling
+    } else {
+      setWolfPosition(null);  // Reset wolf position if no ducklings are collected
+    }
+  }, [collectedDucklings]);
 
   const handleTimerTick = (timeLeft: number) => {
     if (timeLeft === 0) {
@@ -47,6 +54,7 @@ function App() {
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
     });
+    setWolfPosition(null);
     setGameEnded(false);
   };
 
@@ -75,12 +83,10 @@ function App() {
               onCollision={handleCollision}
               mamaDuckPosition={mamaDuckPosition}
             />
-            {collectedDucklings.length === 1 && (
-              <div>
-                <Wolf gameStarted={false} wolfPosition={wolfPosition}/>
-              </div>
+            {collectedDucklings.length > 0 && (
+              <Wolf 
+                gameStarted={gameStarted} collectedDucklings={collectedDucklings}              />
             )}
-
             <div>
               <HUD
                 collectedCount={collectedDucklings.length}
