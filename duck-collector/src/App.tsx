@@ -34,15 +34,6 @@ function App() {
     setCollectedDucklings((prev) => [...prev, collectedDuckling]);
   };
 
-  useEffect(() => {
-    if (collectedDucklings.length > 0) {
-      const lastDuckling = collectedDucklings[collectedDucklings.length - 1];
-      setWolfPosition(lastDuckling);
-    } else {
-      setWolfPosition(null);
-    }
-  }, [collectedDucklings]);
-
   const handleTimerTick = (timeLeft: number) => {
     if (timeLeft === 0) {
       setGameEnded(true);
@@ -89,7 +80,8 @@ function App() {
             {collectedDucklings.length > 0 && (
               <Wolf
                 gameStarted={gameStarted}
-                collectedDucklings={collectedDucklings}
+                collectedDucklings={collectedDucklings} 
+                mamaDuckPosition={mamaDuckPosition}              
               />
             )}
             <div>
