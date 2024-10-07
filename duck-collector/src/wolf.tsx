@@ -1,38 +1,35 @@
 import React, { useState, useEffect } from "react";
 
 interface DucklingPosition {
-    left: number;
-    top: number;
+    x: number;
+    y: number;
 }
 
 export const Wolf: React.FC<{ gameStarted: boolean; collectedDucklings: DucklingPosition[] }> = ({ gameStarted, collectedDucklings }) => {
-    const [currentPosition, setCurrentPosition] = useState<{ left: number; top: number }>({ left: 0, top: 0 });
+    const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrentPosition((prev) => {
-                if (collectedDucklings.length === 0) return prev; // No collected ducklings to follow
-
-                // Get the position of the last collected duckling
+                if (collectedDucklings.length === 0) return prev;
                 const targetDuckling = collectedDucklings[collectedDucklings.length - 1];
 
-                const dx = targetDuckling.left - prev.left;
-                const dy = targetDuckling.top - prev.top;
+                const dx = targetDuckling.x - prev.x;
+                const dy = targetDuckling.y - prev.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
-                // Collision detection: if distance is less than a certain threshold, assume collision
-                const collisionThreshold = 30; // Adjust this value based on your game design
+                const collisionThreshold = 30;
                 if (distance < collisionThreshold) {
-                    return prev; // Stop moving if collision detected
+                    return prev;
                 }
 
-                const speed = 10; // Adjust speed as needed
-                const newLeft = prev.left + (dx / distance) * speed;
-                const newTop = prev.top + (dy / distance) * speed;
+                const speed = 30;
+                const newX = prev.x + (dx / distance) * speed;
+                const newY = prev.y + (dy / distance) * speed;
 
-                return { left: newLeft, top: newTop };
+                return { x: newX, y: newY };
             });
-        }, 20);
+        }, 50);
 
         return () => clearInterval(interval);
     }, [collectedDucklings]);
@@ -43,8 +40,8 @@ export const Wolf: React.FC<{ gameStarted: boolean; collectedDucklings: Duckling
                 className="wolf"
                 style={{
                     position: "absolute",
-                    left: `${currentPosition.left}px`,
-                    top: `${currentPosition.top}px`,
+                    left: `${currentPosition.x}px`,
+                    top: `${currentPosition.y}px`,
                     transition: "left 0.03s linear, top 0.03s linear",
                 }}
             ></div>

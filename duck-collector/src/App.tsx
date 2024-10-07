@@ -11,16 +11,19 @@ import { GameEnd } from "./game-end";
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [ducklingPositions, setDucklingPositions] = useState<
-    { left: number; top: number }[]
+    { x: number; y: number }[]
   >([]);
   const [collectedDucklings, setCollectedDucklings] = useState<
-    { left: number; top: number }[]
+    { x: number; y: number }[]
   >([]);
   const [mamaDuckPosition, setMamaDuckPosition] = useState({
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
   });
-  const [wolfPosition, setWolfPosition] = useState<{ left: number; top: number } | null>(null);
+  const [wolfPosition, setWolfPosition] = useState<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [gameEnded, setGameEnded] = useState(false);
 
   const handleCollision = (ducklingIndex: number) => {
@@ -34,9 +37,9 @@ function App() {
   useEffect(() => {
     if (collectedDucklings.length > 0) {
       const lastDuckling = collectedDucklings[collectedDucklings.length - 1];
-      setWolfPosition(lastDuckling);  // Set wolf position to the last collected duckling
+      setWolfPosition(lastDuckling);
     } else {
-      setWolfPosition(null);  // Reset wolf position if no ducklings are collected
+      setWolfPosition(null);
     }
   }, [collectedDucklings]);
 
@@ -84,8 +87,10 @@ function App() {
               mamaDuckPosition={mamaDuckPosition}
             />
             {collectedDucklings.length > 0 && (
-              <Wolf 
-                gameStarted={gameStarted} collectedDucklings={collectedDucklings}              />
+              <Wolf
+                gameStarted={gameStarted}
+                collectedDucklings={collectedDucklings}
+              />
             )}
             <div>
               <HUD

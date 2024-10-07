@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 
 export const MamaDuck: React.FC<{ 
-    collectedDucklings: { left: number; top: number }[],
+    collectedDucklings: { x: number; y: number }[],
     setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>,
     mamaDuckPosition: { x: number; y: number }; 
 }> = ({ collectedDucklings, setPosition, mamaDuckPosition }) => {
@@ -65,7 +65,6 @@ export const MamaDuck: React.FC<{
                 setRotation(degrees + 90); 
             }
 
-       
             updatePosition(targetPosition);
             setPosition(targetPosition);
             setHistory((prevHistory) => {
