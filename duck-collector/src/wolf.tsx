@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-export const Wolf: React.FC<{ gameStarted: boolean; collectedDucklings: { x: number; y: number }[]; mamaDuckPosition: { x: number; y: number } }> = ({ gameStarted, collectedDucklings, mamaDuckPosition }) => {
+export const Wolf: React.FC<{ gameStarted: boolean; collectedDucklings: { x: number; y: number }[]; mamaDuckPosition: { x: number; y: number }; onEating: () => void }> = ({ gameStarted, collectedDucklings, mamaDuckPosition, onEating }) => {
     const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
     const [eatingDuckling, setEatingDuckling] = useState(false);
     const wolfSpeed = 2.5;
@@ -20,6 +20,7 @@ export const Wolf: React.FC<{ gameStarted: boolean; collectedDucklings: { x: num
                 if (distance < stoppingDistance) {
                     console.log("Wolf reached Mama Duck, stopping for 2 seconds.");
                     setEatingDuckling(true);
+                    onEating();
                     setTimeout(() => {
                         console.log("Wolf resumes movement after eating.");
                         setEatingDuckling(false);
@@ -39,7 +40,7 @@ export const Wolf: React.FC<{ gameStarted: boolean; collectedDucklings: { x: num
         const interval = setInterval(moveWolf, 5);
 
         return () => clearInterval(interval);
-    }, [gameStarted, collectedDucklings, mamaDuckPosition, eatingDuckling]);
+    }, [gameStarted, collectedDucklings, mamaDuckPosition, eatingDuckling, onEating]);
 
     return (
         <>

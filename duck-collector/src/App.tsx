@@ -34,6 +34,10 @@ function App() {
     setCollectedDucklings((prev) => [...prev, collectedDuckling]);
   };
 
+  const handleEating = () => {
+    setCollectedDucklings((prev) => prev.slice(0, -1))
+  }
+
   const handleTimerTick = (timeLeft: number) => {
     if (timeLeft === 0) {
       setGameEnded(true);
@@ -81,7 +85,8 @@ function App() {
               <Wolf
                 gameStarted={gameStarted}
                 collectedDucklings={collectedDucklings} 
-                mamaDuckPosition={mamaDuckPosition}              
+                mamaDuckPosition={mamaDuckPosition}
+                onEating={handleEating}              
               />
             )}
             <div>
