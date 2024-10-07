@@ -35,8 +35,14 @@ function App() {
   };
 
   const handleEating = () => {
-    setCollectedDucklings((prev) => prev.slice(0, -1))
-  }
+    setCollectedDucklings((prev) => {
+      const newCollectedDucklings = prev.slice(0, -1);
+      if (newCollectedDucklings.length === 0) {
+        setGameEnded(true);
+      }
+      return newCollectedDucklings;
+    });
+  };
 
   const handleTimerTick = (timeLeft: number) => {
     if (timeLeft === 0) {
