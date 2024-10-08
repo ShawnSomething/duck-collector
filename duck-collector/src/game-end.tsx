@@ -9,7 +9,8 @@ export const GameEnd: React.FC<GameEndProps> = ({ totalScore, onReset }) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Space") {
-        window.location.reload();
+        event.preventDefault();
+        onReset();
       }
     };
 
@@ -18,15 +19,13 @@ export const GameEnd: React.FC<GameEndProps> = ({ totalScore, onReset }) => {
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [onReset]);
+  }, []);
 
   return (
-    <>
-      <div className="start-screen">
-          <h1>Game Over</h1>
-          <p>Total Ducks Collected: {totalScore}</p>
-          <p>Press Space to Restart</p>
-      </div>
-    </>
+    <div className="start-screen">
+      <h1>Game Over</h1>
+      <p>Total Ducks Collected: {totalScore}</p>
+      <p>Press Space to Restart</p>
+    </div>
   );
 };

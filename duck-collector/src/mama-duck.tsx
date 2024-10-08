@@ -1,119 +1,128 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 
-export const MamaDuck: React.FC<{ 
-    collectedDucklings: { x: number; y: number }[],
-    setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>,
-    mamaDuckPosition: { x: number; y: number }; 
+export const MamaDuck: React.FC<{
+  collectedDucklings: { x: number; y: number }[];
+  setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
+  mamaDuckPosition: { x: number; y: number };
 }> = ({ collectedDucklings, setPosition, mamaDuckPosition }) => {
-    const [position, updatePosition] = useState(mamaDuckPosition);
-    const [history, setHistory] = useState<{ x: number; y: number }[]>([]); 
-    const speed = 4.5; 
-    const [keysPressed, setKeysPressed] = useState<Set<string>>(new Set());
-    const [rotation, setRotation] = useState(0);
-    const maxHistoryLength = collectedDucklings.length * 14; 
+  const [position, updatePosition] = useState(mamaDuckPosition);
+  const [history, setHistory] = useState<{ x: number; y: number }[]>([]);
+  const speed = 4.5;
+  const keysPressed = useRef<Set<string>>(new Set());
+  const [rotation, setRotation] = useState(0);
+  const maxHistoryLength = collectedDucklings.length * 14;
+  const animationRef = useRef<number | null>(null);
 
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            const { key } = event;
-            setKeysPressed((prev) => new Set(prev).add(key));
-        };
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const { key } = event;
+    keysPressed.current.add(key);
+  };
 
-        const handleKeyUp = (event: KeyboardEvent) => {
-            const { key } = event;
-            setKeysPressed((prev) => {
-                const newSet = new Set(prev);
-                newSet.delete(key);
-                return newSet;
-            });
-        };
+  const handleKeyUp = (event: KeyboardEvent) => {
+    const { key } = event;
+    keysPressed.current.delete(key);
+  };
 
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-        
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.removeEventListener('keyup', handleKeyUp);
-        };
-    }, []);
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
-    useEffect(() => {
-        const animate = () => {
-            let targetPosition = { ...position };
-            let directionX = 0;
-            let directionY = 0;
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, []);
 
-            if (keysPressed.has('w')) {
-                targetPosition.y = Math.max(0, position.y - speed);
-                directionY -= 1;
-            }
-            if (keysPressed.has('a')) {
-                targetPosition.x = Math.max(0, position.x - speed);
-                directionX -= 1;
-            }
-            if (keysPressed.has('s')) {
-                targetPosition.y = Math.min(window.innerHeight - 50, position.y + speed);
-                directionY += 1;
-            }
-            if (keysPressed.has('d')) {
-                targetPosition.x = Math.min(window.innerWidth - 50, position.x + speed);
-                directionX += 1;
-            }
+  useEffect(() => {
+    const animate = () => {
+      let targetPosition = { ...position };
+      let directionX = 0;
+      let directionY = 0;
 
-            if (directionX !== 0 || directionY !== 0) {
-                const angle = Math.atan2(directionY, directionX);
-                const degrees = angle * (180 / Math.PI);
-                setRotation(degrees + 90); 
-            }
+      if (keysPressed.current.has("w")) {
+        targetPosition.y = Math.max(0, position.y - speed);
+        directionY -= 1;
+      }
+      if (keysPressed.current.has("a")) {
+        targetPosition.x = Math.max(0, position.x - speed);
+        directionX -= 1;
+      }
+      if (keysPressed.current.has("s")) {
+        targetPosition.y = Math.min(window.innerHeight - 50, position.y + speed);
+        directionY += 1;
+      }
+      if (keysPressed.current.has("d")) {
+        targetPosition.x = Math.min(window.innerWidth - 50, position.x + speed);
+        directionX += 1;
+      }
 
-            updatePosition(targetPosition);
-            setPosition(targetPosition);
-            setHistory((prevHistory) => {
-                const updatedHistory = [...prevHistory, targetPosition];
-                if (updatedHistory.length > maxHistoryLength) {
-                    updatedHistory.shift(); 
-                }
-                return updatedHistory;
-            });
+      if (directionX !== 0 || directionY !== 0) {
+        const angle = Math.atan2(directionY, directionX);
+        const degrees = angle * (180 / Math.PI);
+        setRotation(degrees + 90);
+      }
 
-            requestAnimationFrame(animate);
-        };
+      if (position.x !== targetPosition.x || position.y !== targetPosition.y) {
+        updatePosition(targetPosition);
+        setPosition(targetPosition);
+        setHistory((prevHistory) => {
+          const updatedHistory = [...prevHistory, targetPosition];
+          if (updatedHistory.length > maxHistoryLength) {
+            updatedHistory.shift();
+          }
+          return updatedHistory;
+        });
+      }
 
-        requestAnimationFrame(animate);
-    }, [keysPressed, position, setPosition, maxHistoryLength]);
+      animationRef.current = requestAnimationFrame(animate);
+    };
 
-    return (
-        <>
-            <div className="mama-duck"
-                style={{
-                    left: `${position.x}px`,
-                    top: `${position.y}px`,
-                    position: 'absolute',
-                    transform: `rotate(${rotation}deg)` 
-                }}>
-            </div>
+    animationRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [position, setPosition, maxHistoryLength]);
 
-            {collectedDucklings.map((_, index) => {
-                const historyIndex = Math.max(0, history.length - (index + 2.5) * 4);
-                const ducklingPosition = history[historyIndex] || position;
-                const angleOffset = (index / collectedDucklings.length) * Math.PI / 2;
-                const distanceFromMama = 45 + (index % 3) * 5; 
-          
-                const ducklingX = ducklingPosition.x - distanceFromMama * Math.cos(rotation * (Math.PI / 260)) + distanceFromMama * Math.cos(angleOffset);
-                const ducklingY = ducklingPosition.y - distanceFromMama * Math.sin(rotation * (Math.PI / 300)) + distanceFromMama * Math.sin(angleOffset);
+  const ducklingPositions = useMemo(() => {
+    return collectedDucklings.map((_, index) => {
+      const historyIndex = Math.max(0, history.length - (index + 2.5) * 4);
+      const ducklingPosition = history[historyIndex] || position;
+      const angleOffset = (index / collectedDucklings.length) * (Math.PI / 2);
+      const distanceFromMama = 45 + (index % 3) * 5;
 
-                return (
-                    <div
-                        key={index}
-                        className="ducklings"
-                        style={{
-                            position: "absolute",
-                            left: `${ducklingX}px`,
-                            top: `${ducklingY}px`,
-                            transform: `rotate(${rotation}deg)`,
-                        }}
-                    ></div>
-                );
-            })}
-        </>
-    );
+      return {
+        x: ducklingPosition.x - distanceFromMama * Math.cos(rotation * (Math.PI / 260)) + distanceFromMama * Math.cos(angleOffset),
+        y: ducklingPosition.y - distanceFromMama * Math.sin(rotation * (Math.PI / 300)) + distanceFromMama * Math.sin(angleOffset),
+      };
+    });
+  }, [collectedDucklings, history, position, rotation]);
+
+  return (
+    <>
+      <div
+        className="mama-duck"
+        style={{
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+          position: "absolute",
+          transform: `rotate(${rotation}deg)`,
+        }}
+      ></div>
+
+      {ducklingPositions.map((ducklingPosition, index) => (
+        <div
+          key={index}
+          className="ducklings"
+          style={{
+            position: "absolute",
+            left: `${ducklingPosition.x}px`,
+            top: `${ducklingPosition.y}px`,
+            transform: `rotate(${rotation}deg)`,
+          }}
+        ></div>
+      ))}
+    </>
+  );
 };

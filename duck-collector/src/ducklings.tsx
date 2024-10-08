@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback, useMemo } from "react";
 
 export const Ducklings: React.FC<{
   gameStarted: boolean;
@@ -8,10 +8,10 @@ export const Ducklings: React.FC<{
   mamaDuckPosition: { x: number; y: number };
 }> = ({ gameStarted, setDucklingPositions, ducklingPositions, onCollision, mamaDuckPosition }) => {
 
-  const spawnDuckling = () => {
-    const ducklingWidth = 20;
-    const ducklingHeight = 20;
+  const ducklingWidth = 20;
+  const ducklingHeight = 20;
 
+  const spawnDuckling = useCallback(() => {
     const boardWidth = window.innerWidth;
     const boardHeight = window.innerHeight;
 
@@ -22,7 +22,7 @@ export const Ducklings: React.FC<{
       ...prev,
       { x: randomX, y: randomY },
     ]);
-  };
+  }, [setDucklingPositions]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout | null = null;
@@ -37,9 +37,9 @@ export const Ducklings: React.FC<{
         clearInterval(interval);
       }
     };
-  }, [gameStarted, setDucklingPositions]);
+  }, [gameStarted, spawnDuckling]);
 
-  const detectCollision = (duckling: { x: number; y: number }, ducklingIndex: number) => {
+  const detectCollision = useCallback((duckling: { x: number; y: number }, ducklingIndex: number) => {
     const proximity = 50;
 
     const distance = Math.sqrt(
@@ -51,11 +51,11 @@ export const Ducklings: React.FC<{
       console.log(`Collision with duckling ${ducklingIndex}`);
       onCollision(ducklingIndex);
     }
-  };
+  }, [mamaDuckPosition, onCollision]);
 
   useEffect(() => {
     ducklingPositions.forEach((position, index) => detectCollision(position, index));
-  }, [ducklingPositions, mamaDuckPosition]);
+  }, [ducklingPositions, detectCollision]);
 
   return (
     <>
@@ -68,7 +68,7 @@ export const Ducklings: React.FC<{
             left: `${position.x}px`,
             top: `${position.y}px`,
           }}
-        ></div>
+        />
       ))}
     </>
   );
