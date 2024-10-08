@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 
-const WOLF_SPEED = 11;
+const WOLF_SPEED = 4;
 const STOPPING_DISTANCE = 25;
-const MOVE_INTERVAL = 15;
+const MOVE_INTERVAL = 5;
 
 export const Wolf: React.FC<{
   gameStarted: boolean;
@@ -29,7 +29,7 @@ export const Wolf: React.FC<{
           console.log("Wolf resumes movement after eating.");
           setEatingDuckling(false);
         }, 2000);
-        return prev; // Stop moving the wolf
+        return prev;
       }
 
       const directionX = (dx / distance) * WOLF_SPEED;
