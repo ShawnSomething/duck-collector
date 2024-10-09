@@ -6,6 +6,7 @@ import { MamaDuck } from "./mama-duck";
 import { Ducklings } from "./ducklings";
 import { HUD } from "./hud";
 import { Wolf } from "./wolf";
+import { Butcher } from "./butcher";
 import { GameEnd } from "./game-end";
 
 function App() {
@@ -64,10 +65,7 @@ function App() {
   useEffect(() => {
     const numberOfWolves = Math.floor((collectedDucklings.length - 1) / 3) + 1;
     if (collectedDucklings.length > 0 && wolves.length < numberOfWolves) {
-      setWolves((prevWolves) => [
-        ...prevWolves,
-        { x: 0, y: 0 },
-      ]);
+      setWolves((prevWolves) => [...prevWolves, { x: 0, y: 0 }]);
     }
   }, [collectedDucklings, wolves]);
 
@@ -102,9 +100,11 @@ function App() {
                 gameStarted={gameStarted}
                 collectedDucklings={collectedDucklings}
                 mamaDuckPosition={mamaDuckPosition}
-                onEating={handleEating} 
-                wolfIndex={index}              />
+                onEating={handleEating}
+                wolfIndex={index}
+              />
             ))}
+            <Butcher />
             <div>
               <HUD
                 collectedCount={collectedDucklings.length}
