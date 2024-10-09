@@ -1,64 +1,70 @@
-import React, { useState, useEffect, useCallback } from "react";
-
-const WOLF_SPEED = 4;
-const STOPPING_DISTANCE = 25;
-const MOVE_INTERVAL = 5;
+import React, { useState, useEffect } from "react";
 
 export const Wolf: React.FC<{
   gameStarted: boolean;
   collectedDucklings: { x: number; y: number }[];
   mamaDuckPosition: { x: number; y: number };
   onEating: () => void;
-}> = ({ gameStarted, collectedDucklings, mamaDuckPosition, onEating }) => {
+  wolfIndex: number;
+}> = ({ gameStarted, collectedDucklings, mamaDuckPosition, onEating, wolfIndex }) => {
   const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [eatingDuckling, setEatingDuckling] = useState(false);
+  const wolfSpeed = 2;
+  const stoppingDistance = 25;
 
-  const moveWolf = useCallback(() => {
-    setCurrentPosition((prev) => {
-      if (collectedDucklings.length === 0) return prev;
-
-      const dx = mamaDuckPosition.x - prev.x;
-      const dy = mamaDuckPosition.y - prev.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      if (distance < STOPPING_DISTANCE) {
-        console.log("Wolf reached Mama Duck, stopping for 2 seconds.");
-        setEatingDuckling(true);
-        onEating();
-        setTimeout(() => {
-          console.log("Wolf resumes movement after eating.");
-          setEatingDuckling(false);
-        }, 2000);
-        return prev;
-      }
-
-      const directionX = (dx / distance) * WOLF_SPEED;
-      const directionY = (dy / distance) * WOLF_SPEED;
-
-      return {
-        x: prev.x + directionX,
-        y: prev.y + directionY,
-      };
-    });
-  }, [collectedDucklings, mamaDuckPosition, onEating]);
+  const offset = (wolfIndex % 2 === 0 ? 4 : -6) * (wolfIndex * 25);
 
   useEffect(() => {
     if (!gameStarted || eatingDuckling) return;
 
-    const interval = setInterval(moveWolf, MOVE_INTERVAL);
+    const moveWolf = () => {
+      setCurrentPosition((prev) => {
+        if (collectedDucklings.length === 0) return prev;
+
+        
+        const targetX = mamaDuckPosition.x + offset; 
+        const targetY = mamaDuckPosition.y + offset; 
+
+        const dx = targetX - prev.x;
+        const dy = targetY - prev.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < stoppingDistance) {
+          console.log("Wolf reached Mama Duck, stopping for 2 seconds.");
+          setEatingDuckling(true);
+          onEating();
+          setTimeout(() => {
+            console.log("Wolf resumes movement after eating.");
+            setEatingDuckling(false);
+          }, 2000);
+          return prev;
+        }
+        const directionX = (dx / distance) * wolfSpeed;
+        const directionY = (dy / distance) * wolfSpeed;
+
+        return {
+          x: prev.x + directionX,
+          y: prev.y + directionY,
+        };
+      });
+    };
+
+    const interval = setInterval(moveWolf, 5);
 
     return () => clearInterval(interval);
-  }, [gameStarted, eatingDuckling, moveWolf]);
+  }, [gameStarted, collectedDucklings, mamaDuckPosition, eatingDuckling, onEating, offset]);
 
   return (
-    <div
-      className="wolf"
-      style={{
-        position: "absolute",
-        left: `${currentPosition.x}px`,
-        top: `${currentPosition.y}px`,
-        transition: "left 0.03s linear, top 0.03s linear",
-      }}
-    ></div>
+    <>
+      <div
+        className="wolf"
+        style={{
+          position: "absolute",
+          left: `${currentPosition.x}px`,
+          top: `${currentPosition.y}px`,
+          transition: "left 0.03s linear, top 0.03s linear",
+        }}
+      ></div>
+    </>
   );
 };
