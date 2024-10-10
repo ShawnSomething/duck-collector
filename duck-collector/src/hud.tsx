@@ -6,29 +6,28 @@ interface HUDProps {
 }
 
 export const HUD: React.FC<HUDProps> = ({ collectedCount, onTimerTick }) => {
-    const [timeLeft, setTimeLeft] = useState(300);
+    const [timeLeft, setTimeLeft] = useState(300); 
 
     useEffect(() => {
         let timer: NodeJS.Timeout | null = null; 
 
         if (timeLeft > 0) {
             timer = setInterval(() => {
-                setTimeLeft(prevTime => {
-                    const newTimeLeft = prevTime - 1;
-                    onTimerTick(newTimeLeft);
-                    return newTimeLeft;
-                });
+                setTimeLeft(prevTime => prevTime - 1);
             }, 1000);
         } else {
             clearInterval(timer as unknown as NodeJS.Timeout);
         }
 
+        onTimerTick(timeLeft);
+
         return () => {
             if (timer) {
-                clearInterval(timer); 
+                clearInterval(timer) ; 
             }
         }; 
-    }, [timeLeft, onTimerTick]); 
+    }, [timeLeft]);
+
     const formatTime = (seconds: number) => {
         const minutes = Math.floor(seconds / 60);
         const secs = seconds % 60;
