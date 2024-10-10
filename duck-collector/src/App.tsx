@@ -23,6 +23,7 @@ function App() {
   });
   const [wolves, setWolves] = useState<Array<{ x: number; y: number }>>([]);
   const [gameEnded, setGameEnded] = useState(false);
+  const [addTime, setAddTime] = useState(0);
 
   const handleCollision = (ducklingIndex: number) => {
     const collectedDuckling = ducklingPositions[ducklingIndex];
@@ -60,6 +61,11 @@ function App() {
     });
     setWolves([]);
     setGameEnded(false);
+  };
+
+  const handleButcherCollision = () => {
+    setCollectedDucklings((prev) => prev.slice(0, -1));
+    setAddTime(5);
   };
 
   useEffect(() => {
@@ -104,11 +110,17 @@ function App() {
                 wolfIndex={index}
               />
             ))}
-            <Butcher gameStarted={gameStarted} collectedDucklings={collectedDucklings} />
+            <Butcher
+              gameStarted={gameStarted}
+              collectedDucklings={collectedDucklings}
+              onButcherCollision={handleButcherCollision}
+              mamaDuckPosition={mamaDuckPosition}
+            />
             <div>
               <HUD
                 collectedCount={collectedDucklings.length}
                 onTimerTick={handleTimerTick}
+                addTime={addTime}
               />
             </div>
           </>

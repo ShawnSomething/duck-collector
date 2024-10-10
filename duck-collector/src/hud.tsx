@@ -3,9 +3,10 @@ import React, { useEffect, useState } from 'react';
 interface HUDProps {
     collectedCount: number;
     onTimerTick: (timeLeft: number) => void;
+    addTime: number;
 }
 
-export const HUD: React.FC<HUDProps> = ({ collectedCount, onTimerTick }) => {
+export const HUD: React.FC<HUDProps> = ({ collectedCount, onTimerTick, addTime }) => {
     const [timeLeft, setTimeLeft] = useState(300); 
 
     useEffect(() => {
@@ -27,6 +28,12 @@ export const HUD: React.FC<HUDProps> = ({ collectedCount, onTimerTick }) => {
             }
         }; 
     }, [timeLeft]);
+
+    useEffect(() => {
+        if(addTime > 0) {
+            setTimeLeft(prevTime => prevTime + addTime)
+        }
+    }, [addTime])
 
     const formatTime = (seconds: number) => {
         const minutes = Math.floor(seconds / 60);
