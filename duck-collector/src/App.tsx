@@ -110,7 +110,16 @@ function App() {
               onCollision={handleCollision}
               mamaDuckPosition={mamaDuckPosition}
             />
-
+            {wolves.map((wolfPosition, index) => (
+              <Wolf
+                key={index}
+                gameStarted={gameStarted}
+                collectedDucklings={collectedDucklings}
+                mamaDuckPosition={mamaDuckPosition}
+                onEating={handleEating}
+                wolfIndex={index}
+              />
+            ))}
             <Butcher
               gameStarted={gameStarted}
               collectedDucklings={collectedDucklings}
