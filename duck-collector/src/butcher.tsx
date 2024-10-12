@@ -7,6 +7,7 @@ export const Butcher: React.FC<{
   mamaDuckPosition: { x: number; y: number };
 }> = ({ gameStarted, collectedDucklings, onButcherCollision, mamaDuckPosition }) => {
   const [isButcherVisible, setIsButcherVisible] = useState(false);
+  const [soldDucklings, setSoldDucklings] = useState<{ id: string }[]>([]);
   const butcherPosition = { x: window.innerWidth / 2, y: 0 };
 
   const lastCollisionTimeRef = useRef<number>(0);
@@ -34,6 +35,7 @@ export const Butcher: React.FC<{
       if (distance <= 80 && timeSinceLastCollision > 1000) {
         onButcherCollision();
         lastCollisionTimeRef.current = currentTime;
+        setSoldDucklings((prev) => [...prev, { id: Date.now().toString() }]); // Add new sold duckling
         console.log("Butcher collided with Mama Duck. Collision cooldown started.");
       }
     };
@@ -46,10 +48,15 @@ export const Butcher: React.FC<{
   return (
     <>
       {isButcherVisible && (
-        <div
-          className="butcher"
-          style={{ position: "absolute", left: butcherPosition.x, top: butcherPosition.y }}
-        ></div>
+        <div className="butcher" style={{ position: "absolute", left: butcherPosition.x, top: butcherPosition.y }}>
+          <div className="ducklings-case">
+            {soldDucklings.map((duckling) => (
+              <div key={duckling.id} className="dead-ducklings">
+                <span className="eyes">xx</span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
     </>
   );

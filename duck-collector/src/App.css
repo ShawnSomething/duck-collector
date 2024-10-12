@@ -163,3 +163,34 @@
   left: 50%;
   transform: translateX(-50%); 
 }
+
+.ducklings-case {
+  position: absolute;
+  left: 50px; 
+  top: -25px;
+  width: 120px; 
+  background-color: #f0e68c; 
+  border: 2px solid #8b4513; 
+  border-radius: 5px; 
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px; 
+}
+
+.dead-ducklings {
+  width: 20px;
+  height: 20px;
+  background-color: yellow;
+  text-align: center;
+  line-height: 20px;
+  font-size: 10px;
+  font-weight: bold;
+  border: 1px solid black;
+  border-radius: 50%;
+  padding: 2px;
+}
+
+.eyes {
+  font-size: 12px; 
+  color: black;
+}
