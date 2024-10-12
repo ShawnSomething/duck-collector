@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 export const Wolf: React.FC<{
   gameStarted: boolean;
-  collectedDucklings: { x: number; y: number }[];
+  collectedDucklings: { x: number; y: number; id: string }[];
   mamaDuckPosition: { x: number; y: number };
   onEating: () => void;
   wolfIndex: number;
@@ -14,6 +14,8 @@ export const Wolf: React.FC<{
 
   const offset = (wolfIndex % 2 === 0 ? 4 : -6) * (wolfIndex * 25);
 
+  const lastActionTimeRef = useRef<number>(0);
+
   useEffect(() => {
     if (!gameStarted || eatingDuckling) return;
 
@@ -21,24 +23,31 @@ export const Wolf: React.FC<{
       setCurrentPosition((prev) => {
         if (collectedDucklings.length === 0) return prev;
 
-        
-        const targetX = mamaDuckPosition.x + offset; 
-        const targetY = mamaDuckPosition.y + offset; 
+        const targetX = mamaDuckPosition.x + offset;
+        const targetY = mamaDuckPosition.y + offset;
 
         const dx = targetX - prev.x;
         const dy = targetY - prev.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-        if (distance < stoppingDistance) {
+        const currentTime = Date.now();
+        const timeSinceLastAction = currentTime - lastActionTimeRef.current;
+
+        if (distance < stoppingDistance && timeSinceLastAction > 2000) {
           console.log("Wolf reached Mama Duck, stopping for 2 seconds.");
           setEatingDuckling(true);
           onEating();
+
+          lastActionTimeRef.current = currentTime;
+
           setTimeout(() => {
             console.log("Wolf resumes movement after eating.");
             setEatingDuckling(false);
           }, 2000);
+
           return prev;
         }
+
         const directionX = (dx / distance) * wolfSpeed;
         const directionY = (dy / distance) * wolfSpeed;
 

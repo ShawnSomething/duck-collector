@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 
 export const MamaDuck: React.FC<{
-  collectedDucklings: { x: number; y: number }[];
+  collectedDucklings: { x: number; y: number, id: string }[];
   setPosition: React.Dispatch<React.SetStateAction<{ x: number; y: number }>>;
   mamaDuckPosition: { x: number; y: number };
 }> = ({ collectedDucklings, setPosition, mamaDuckPosition }) => {
