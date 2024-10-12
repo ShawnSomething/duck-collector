@@ -1,10 +1,11 @@
-import React, { useEffect, useCallback, useMemo } from "react";
+import React, { useEffect, useCallback, useMemo } from "react"; 
+import { v4 as uuidv4 } from 'uuid'
 
 export const Ducklings: React.FC<{
   gameStarted: boolean;
-  setDucklingPositions: React.Dispatch<React.SetStateAction<{ x: number; y: number }[]>>;
-  ducklingPositions: { x: number; y: number }[];
-  onCollision: (ducklingIndex: number) => void;
+  setDucklingPositions: React.Dispatch<React.SetStateAction<{ id: string, x: number; y: number }[]>>;
+  ducklingPositions: { id: string, x: number; y: number }[];
+  onCollision: (ducklingId: string) => void;
   mamaDuckPosition: { x: number; y: number };
 }> = ({ gameStarted, setDucklingPositions, ducklingPositions, onCollision, mamaDuckPosition }) => {
 
@@ -17,10 +18,15 @@ export const Ducklings: React.FC<{
 
     const randomX = Math.random() * (boardWidth - ducklingWidth);
     const randomY = Math.random() * (boardHeight - ducklingHeight);
+    const newDuckling = {
+      id: uuidv4(),
+      x: randomX,
+      y: randomY,
+    }
 
     setDucklingPositions((prev) => [
       ...prev,
-      { x: randomX, y: randomY },
+      newDuckling,
     ]);
   }, [setDucklingPositions]);
 
@@ -39,7 +45,7 @@ export const Ducklings: React.FC<{
     };
   }, [gameStarted, spawnDuckling]);
 
-  const detectCollision = useCallback((duckling: { x: number; y: number }, ducklingIndex: number) => {
+  const detectCollision = useCallback((duckling: { id: string; x: number; y: number }) => {
     const proximity = 50;
 
     const distance = Math.sqrt(
@@ -48,20 +54,20 @@ export const Ducklings: React.FC<{
     );
 
     if (distance < proximity) {
-      console.log(`Collision with duckling ${ducklingIndex}`);
-      onCollision(ducklingIndex);
+      console.log(`Collision with duckling ${duckling.id}`);
+      onCollision(duckling.id);
     }
   }, [mamaDuckPosition, onCollision]);
 
   useEffect(() => {
-    ducklingPositions.forEach((position, index) => detectCollision(position, index));
+    ducklingPositions.forEach((position) => detectCollision(position));
   }, [ducklingPositions, detectCollision]);
 
   return (
     <>
-      {ducklingPositions.map((position, index) => (
+      {ducklingPositions.map((position) => (
         <div
-          key={index}
+          key={position.id}
           className="ducklings"
           style={{
             position: "absolute",

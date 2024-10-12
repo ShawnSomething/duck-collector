@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid'
 import "./App.css";
 import { GameBoard } from "./game-board";
 import { GameStart } from "./game-start";
@@ -12,10 +13,10 @@ import { GameEnd } from "./game-end";
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [ducklingPositions, setDucklingPositions] = useState<
-    { x: number; y: number }[]
+    {id: string, x: number; y: number }[]
   >([]);
   const [collectedDucklings, setCollectedDucklings] = useState<
-    { x: number; y: number }[]
+    { id: string, x: number; y: number }[]
   >([]);
   const [mamaDuckPosition, setMamaDuckPosition] = useState({
     x: window.innerWidth / 2,
@@ -25,24 +26,27 @@ function App() {
   const [gameEnded, setGameEnded] = useState(false);
   const [addTime, setAddTime] = useState(0);
 
-  const handleCollision = (ducklingIndex: number) => {
-    const collectedDuckling = ducklingPositions[ducklingIndex];
-    setDucklingPositions((prev) =>
-      prev.filter((_, index) => index !== ducklingIndex)
-    );
-    setCollectedDucklings((prev) => [...prev, collectedDuckling]);
-  };
+  const handleCollision = (ducklingId: string) => {
+    setDucklingPositions((prev) => 
+      prev.filter((duckling) => duckling.id !== ducklingId)
+  )
+  const collectedDucklings = ducklingPositions.find(
+    (duckling) => duckling.id === ducklingId
+  )
+  if (collectedDucklings) {
+    setCollectedDucklings((prev) => [...prev, collectedDucklings])
+  }
+  }
 
   const handleEating = () => {
-    if (collectedDucklings.length > 0) {
-      setCollectedDucklings((prev) => {
-        const newCollectedDucklings = prev.slice(0, -1);
-        if (newCollectedDucklings.length === 0) {
-          setGameEnded(true);
-        }
-        return newCollectedDucklings;
-      });
-    }
+    setCollectedDucklings((prev) => {
+      if (prev.length > 1) {
+        return prev.slice(0, -1);
+      } else {
+        setGameEnded(true);
+        return [];
+      }
+    });
   };
 
   const handleTimerTick = (timeLeft: number) => {
@@ -64,9 +68,15 @@ function App() {
   };
 
   const handleButcherCollision = () => {
-    setCollectedDucklings((prev) => prev.slice(0, -1));
-    setAddTime(5);
-  };
+    setCollectedDucklings((prev) => {
+      if (prev.length > 1) {
+        return prev.slice(0, -1)
+      } else {
+        return []
+      }
+    })
+    setAddTime((prevAddTime) => prevAddTime + 5)
+  }
 
   useEffect(() => {
     const numberOfWolves = Math.floor((collectedDucklings.length - 1) / 3) + 1;
