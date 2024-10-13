@@ -54,7 +54,23 @@ function App() {
     }
   }, [gameStarted, gameEnded])
 
+  const collisionSound = new Howl({
+    src: ["/audio/Duck-Quack.mp3"], 
+    volume: 0.2,
+  });
+  
+  const eatingSound = new Howl({
+    src: ["/audio/Eat-Munch.mp3"],
+    volume: 0.2,
+  });
+  
+  const butcherCollisionSound = new Howl({
+    src: ["/audio/Cash-Register.mp3"],
+    volume: 0.2,
+  });
+
   const handleCollision = (ducklingId: string) => {
+    collisionSound.play()
     setDucklingPositions((prev) => 
       prev.filter((duckling) => duckling.id !== ducklingId)
   )
@@ -67,6 +83,7 @@ function App() {
   }
 
   const handleEating = () => {
+    eatingSound.play()
     setCollectedDucklings((prev) => {
       if (prev.length > 1) {
         return prev.slice(0, -1);
@@ -96,6 +113,7 @@ function App() {
   };
 
   const handleButcherCollision = () => {
+    butcherCollisionSound.play()
     setCollectedDucklings((prev) => {
       if (prev.length > 1) {
         return prev.slice(0, -1)
