@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import "./App.css";
 import { GameBoard } from "./game-board";
 import { GameStart } from "./game-start";
+import { Howl } from "howler";
 import { MamaDuck } from "./mama-duck";
 import { Ducklings } from "./ducklings";
 import { HUD } from "./hud";
@@ -25,6 +26,33 @@ function App() {
   const [wolves, setWolves] = useState<Array<{ x: number; y: number }>>([]);
   const [gameEnded, setGameEnded] = useState(false);
   const [addTime, setAddTime] = useState(0);
+
+  const menuMusic = new Howl({
+    src: ["/audio/Peyruis-Swing.mp3"],
+    loop: true,
+    volume: 0.2,
+  })
+
+  const gameMusic = new Howl({
+    src: ["/audio/ExoNova-Electro-Swingity.mp3"],
+    loop: true,
+    volume: 0.2,
+  })
+
+  useEffect(() => {
+    if(gameStarted) {
+      menuMusic.stop();
+      gameMusic.play();
+    } else {
+      gameMusic.stop();
+      menuMusic.play();
+    }
+
+    return () => {
+      menuMusic.stop();
+      gameMusic.stop();
+    }
+  }, [gameStarted, gameEnded])
 
   const handleCollision = (ducklingId: string) => {
     setDucklingPositions((prev) => 
