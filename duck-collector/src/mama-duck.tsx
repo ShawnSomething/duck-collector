@@ -7,7 +7,7 @@ export const MamaDuck: React.FC<{
 }> = ({ collectedDucklings, setPosition, mamaDuckPosition }) => {
   const [position, updatePosition] = useState(mamaDuckPosition);
   const [history, setHistory] = useState<{ x: number; y: number }[]>([]);
-  const speed = 4.5;
+  const speed = 4.8;
   const keysPressed = useRef<Set<string>>(new Set());
   const [rotation, setRotation] = useState(0);
   const maxHistoryLength = collectedDucklings.length * 14;

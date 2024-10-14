@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { v4 as uuidv4 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid';
 import "./App.css";
 import { GameBoard } from "./game-board";
 import { GameStart } from "./game-start";
@@ -10,6 +10,20 @@ import { HUD } from "./hud";
 import { Wolf } from "./wolf";
 import { Butcher } from "./butcher";
 import { GameEnd } from "./game-end";
+
+const menuMusic = new Howl({
+  src: ["/audio/Peyruis-Swing.mp3"],
+  loop: true,
+  volume: 0.2,
+  pool: 10,
+});
+
+const gameMusic = new Howl({
+  src: ["/audio/ExoNova-Electro-Swingity.mp3"],
+  loop: true,
+  volume: 0.2,
+  pool: 25,
+});
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
@@ -27,63 +41,55 @@ function App() {
   const [gameEnded, setGameEnded] = useState(false);
   const [addTime, setAddTime] = useState(0);
 
-  const menuMusic = new Howl({
-    src: ["/audio/Peyruis-Swing.mp3"],
-    loop: true,
-    volume: 0.2,
-  })
-
-  const gameMusic = new Howl({
-    src: ["/audio/ExoNova-Electro-Swingity.mp3"],
-    loop: true,
-    volume: 0.2,
-  })
-
-  useEffect(() => {
-    if(gameStarted) {
-      menuMusic.stop();
-      gameMusic.play();
-    } else {
-      gameMusic.stop();
-      menuMusic.play();
-    }
-
-    return () => {
-      menuMusic.stop();
-      gameMusic.stop();
-    }
-  }, [gameStarted, gameEnded])
-
   const collisionSound = new Howl({
-    src: ["/audio/Duck-Quack.mp3"], 
+    src: ["/audio/Duck-Quack.mp3"],
     volume: 0.2,
   });
-  
+
   const eatingSound = new Howl({
     src: ["/audio/Eat-Munch.mp3"],
     volume: 0.2,
   });
-  
+
   const butcherCollisionSound = new Howl({
     src: ["/audio/Cash-Register.mp3"],
     volume: 0.2,
   });
 
+  useEffect(() => {
+    if (gameStarted) {
+      if (!gameMusic.playing()) {
+        gameMusic.play();
+      }
+      menuMusic.stop();
+    } else {
+      if (!menuMusic.playing()) {
+        menuMusic.play();
+      }
+      gameMusic.stop();
+    }
+  
+    return () => {
+      menuMusic.stop();
+      gameMusic.stop();
+    };
+  }, [gameStarted, gameEnded]);
+
   const handleCollision = (ducklingId: string) => {
-    collisionSound.play()
+    collisionSound.play();
     setDucklingPositions((prev) => 
       prev.filter((duckling) => duckling.id !== ducklingId)
-  )
-  const collectedDucklings = ducklingPositions.find(
-    (duckling) => duckling.id === ducklingId
-  )
-  if (collectedDucklings) {
-    setCollectedDucklings((prev) => [...prev, collectedDucklings])
-  }
-  }
+    );
+    const collectedDucklings = ducklingPositions.find(
+      (duckling) => duckling.id === ducklingId
+    );
+    if (collectedDucklings) {
+      setCollectedDucklings((prev) => [...prev, collectedDucklings]);
+    }
+  };
 
   const handleEating = () => {
-    eatingSound.play()
+    eatingSound.play();
     setCollectedDucklings((prev) => {
       if (prev.length > 1) {
         return prev.slice(0, -1);
@@ -113,16 +119,16 @@ function App() {
   };
 
   const handleButcherCollision = () => {
-    butcherCollisionSound.play()
+    butcherCollisionSound.play();
     setCollectedDucklings((prev) => {
       if (prev.length > 1) {
-        return prev.slice(0, -1)
+        return prev.slice(0, -1);
       } else {
-        return []
+        return [];
       }
-    })
-    setAddTime((prevAddTime) => prevAddTime + 5)
-  }
+    });
+    setAddTime((prevAddTime) => prevAddTime + 5);
+  };
 
   useEffect(() => {
     const numberOfWolves = Math.floor((collectedDucklings.length - 1) / 3) + 1;

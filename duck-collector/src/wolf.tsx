@@ -9,8 +9,8 @@ export const Wolf: React.FC<{
 }> = ({ gameStarted, collectedDucklings, mamaDuckPosition, onEating, wolfIndex }) => {
   const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [eatingDuckling, setEatingDuckling] = useState(false);
-  const wolfSpeed = 2;
-  const stoppingDistance = 25;
+  const wolfSpeed = 1.8;
+  const stoppingDistance = 20;
 
   const offset = (wolfIndex % 2 === 0 ? 4 : -6) * (wolfIndex * 25);
 
@@ -33,8 +33,8 @@ export const Wolf: React.FC<{
         const currentTime = Date.now();
         const timeSinceLastAction = currentTime - lastActionTimeRef.current;
 
-        if (distance < stoppingDistance && timeSinceLastAction > 2000) {
-          console.log("Wolf reached Mama Duck, stopping for 2 seconds.");
+        if (distance < stoppingDistance && timeSinceLastAction > 3000) {
+          console.log("Wolf reached Mama Duck, stopping for 3 seconds.");
           setEatingDuckling(true);
           onEating();
 
