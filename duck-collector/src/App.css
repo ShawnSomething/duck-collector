@@ -194,3 +194,21 @@
   font-size: 12px; 
   color: black;
 }
+
+.shouting-message {
+  position: absolute;
+  top: 20px; /* adjust position as needed */
+  left: -50%;
+  transform: translateX(-50%);
+  font-size: 24px;
+  color: rgb(4, 4, 4); /* or any color you like */
+  font-weight: bold;
+  opacity: 0; /* make it initially invisible */
+  animation: fadeInOut 1s forwards; /* add a fade effect */
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+

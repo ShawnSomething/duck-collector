@@ -40,18 +40,17 @@ function App() {
   const [wolves, setWolves] = useState<Array<{ x: number; y: number }>>([]);
   const [gameEnded, setGameEnded] = useState(false);
   const [addTime, setAddTime] = useState(0);
+  const [shoutingDuckling, setShoutingDuckling] = useState<string | null>(null);
+
 
   const collisionSound = new Audio("/audio/Duck-Quack.mp3");
   collisionSound.volume = 0.2; 
 
-  const eatingSound = new Howl({
-    src: ["/audio/Eat-Munch.mp3"],
-    volume: 0.2,
-    pool: 25,
-  });
+  const eatingSound = new Audio("/audio/Eat-Munch.mp3");
+  collisionSound.volume = 0.2;
 
   const butcherCollisionSound = new Audio("/audio/Cash-Register.mp3");
-  butcherCollisionSound.volume = 0.2; 
+  butcherCollisionSound.volume = 0.2;
 
   useEffect(() => {
     if (gameStarted) {
@@ -73,8 +72,8 @@ function App() {
   }, [gameStarted, gameEnded]);
 
   const handleCollision = (ducklingId: string) => {
-    collisionSound.play(); 
-    setDucklingPositions((prev) => 
+    collisionSound.play();
+    setDucklingPositions((prev) =>
       prev.filter((duckling) => duckling.id !== ducklingId)
     );
     const collectedDucklings = ducklingPositions.find(
@@ -97,6 +96,44 @@ function App() {
     });
   };
 
+  const handleButcherCollision = () => {
+    butcherCollisionSound.play();
+
+    if (collectedDucklings.length > 0) {
+      const randomIndex = Math.floor(Math.random() * collectedDucklings.length);
+      const ducklingToShout = collectedDucklings[randomIndex].id;
+
+      setShoutingDuckling(ducklingToShout);
+    }
+
+    setCollectedDucklings((prev) => {
+      if (prev.length > 1) {
+        return prev.slice(0, -1);
+      } else {
+        return [];
+      }
+    });
+
+    setAddTime((prevAddTime) => prevAddTime + 5);
+  };
+
+  useEffect(() => {
+    if (shoutingDuckling) {
+      const timer = setTimeout(() => {
+        setShoutingDuckling(null);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [shoutingDuckling]);
+
+  useEffect(() => {
+    const numberOfWolves = Math.floor((collectedDucklings.length - 1) / 3) + 1;
+    if (collectedDucklings.length > 0 && wolves.length < numberOfWolves) {
+      setWolves((prevWolves) => [...prevWolves, { x: 0, y: 0 }]);
+    }
+  }, [collectedDucklings, wolves]);
+
   const handleTimerTick = (timeLeft: number) => {
     if (timeLeft === 0) {
       setGameEnded(true);
@@ -114,25 +151,6 @@ function App() {
     setWolves([]);
     setGameEnded(false);
   };
-
-  const handleButcherCollision = () => {
-    butcherCollisionSound.play();
-    setCollectedDucklings((prev) => {
-      if (prev.length > 1) {
-        return prev.slice(0, -1);
-      } else {
-        return [];
-      }
-    });
-    setAddTime((prevAddTime) => prevAddTime + 5);
-  };
-
-  useEffect(() => {
-    const numberOfWolves = Math.floor((collectedDucklings.length - 1) / 3) + 1;
-    if (collectedDucklings.length > 0 && wolves.length < numberOfWolves) {
-      setWolves((prevWolves) => [...prevWolves, { x: 0, y: 0 }]);
-    }
-  }, [collectedDucklings, wolves]);
 
   return (
     <>
@@ -182,6 +200,13 @@ function App() {
                 addTime={addTime}
               />
             </div>
+
+            {shoutingDuckling && (
+              <div className="shouting-message">
+                <p>Mama, why?!</p>
+              </div>
+            )}
+
           </>
         )}
       </div>
