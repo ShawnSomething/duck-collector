@@ -15,23 +15,23 @@ const menuMusic = new Howl({
   src: ["/audio/Peyruis-Swing.mp3"],
   loop: true,
   volume: 0.2,
-  pool: 10,
+  pool: 100,
 });
 
 const gameMusic = new Howl({
   src: ["/audio/ExoNova-Electro-Swingity.mp3"],
   loop: true,
   volume: 0.2,
-  pool: 25,
+  pool: 250,
 });
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [ducklingPositions, setDucklingPositions] = useState<
-    {id: string, x: number; y: number }[]
+    { id: string; x: number; y: number }[]
   >([]);
   const [collectedDucklings, setCollectedDucklings] = useState<
-    { id: string, x: number; y: number }[]
+    { id: string; x: number; y: number }[]
   >([]);
   const [mamaDuckPosition, setMamaDuckPosition] = useState({
     x: window.innerWidth / 2,
@@ -41,20 +41,17 @@ function App() {
   const [gameEnded, setGameEnded] = useState(false);
   const [addTime, setAddTime] = useState(0);
 
-  const collisionSound = new Howl({
-    src: ["/audio/Duck-Quack.mp3"],
-    volume: 0.2,
-  });
+  const collisionSound = new Audio("/audio/Duck-Quack.mp3");
+  collisionSound.volume = 0.2; 
 
   const eatingSound = new Howl({
     src: ["/audio/Eat-Munch.mp3"],
     volume: 0.2,
+    pool: 25,
   });
 
-  const butcherCollisionSound = new Howl({
-    src: ["/audio/Cash-Register.mp3"],
-    volume: 0.2,
-  });
+  const butcherCollisionSound = new Audio("/audio/Cash-Register.mp3");
+  butcherCollisionSound.volume = 0.2; 
 
   useEffect(() => {
     if (gameStarted) {
@@ -68,7 +65,7 @@ function App() {
       }
       gameMusic.stop();
     }
-  
+
     return () => {
       menuMusic.stop();
       gameMusic.stop();
@@ -76,7 +73,7 @@ function App() {
   }, [gameStarted, gameEnded]);
 
   const handleCollision = (ducklingId: string) => {
-    collisionSound.play();
+    collisionSound.play(); 
     setDucklingPositions((prev) => 
       prev.filter((duckling) => duckling.id !== ducklingId)
     );
