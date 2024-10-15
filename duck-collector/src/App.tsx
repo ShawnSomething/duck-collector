@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
 import "./App.css";
 import { GameBoard } from "./game-board";
 import { GameStart } from "./game-start";
@@ -25,6 +25,37 @@ const gameMusic = new Howl({
   pool: 250,
 });
 
+const shoutingDucklings = [
+  "Mama why?!",
+  "Mama save me!",
+  "Mama, how could you?!",
+  "Help!",
+  "Brother! I'll miss you!",
+  "Our lives are in your flippers, mama",
+  "They are not coming back are they?",
+  "What do you think is going to happen to them?",
+  "Hope someone finds them tasty...",
+  "Am I going to be next?",
+  "Is mama going to get rid of me next?",
+  "Please mama, we trust you",
+  "Mama, we trusted you...",
+  "Ahhhh!",
+  "What's the point of running?",
+  "I'm just a burden to the flock",
+  "Sister! Run!!!",
+  "I'm tired",
+  "Quackkk!!!",
+  "Am I a duck?",
+  "Mama, why are we not flying?",
+  "Is mama enjoying this torture?",
+  "Should have stayed in school...",
+  "No mourners, no funerals",
+  "Get busy living or get busy dying",
+  "Mama don't leave me!",
+  "Mama, I can't keep up!",
+  "My tiny flippers can't go that fast!"
+];
+
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [ducklingPositions, setDucklingPositions] = useState<
@@ -40,11 +71,11 @@ function App() {
   const [wolves, setWolves] = useState<Array<{ x: number; y: number }>>([]);
   const [gameEnded, setGameEnded] = useState(false);
   const [addTime, setAddTime] = useState(0);
-  const [shoutingDuckling, setShoutingDuckling] = useState<string | null>(null);
-
+  const [shoutVisible, setShoutVisible] = useState(false);
+  const [shoutMessage, setShoutMessage] = useState("");
 
   const collisionSound = new Audio("/audio/Duck-Quack.mp3");
-  collisionSound.volume = 0.2; 
+  collisionSound.volume = 0.2;
 
   const eatingSound = new Audio("/audio/Eat-Munch.mp3");
   collisionSound.volume = 0.2;
@@ -71,21 +102,33 @@ function App() {
     };
   }, [gameStarted, gameEnded]);
 
+  const getRandomShoutingDuckling = () => {
+    const randomIndex = Math.floor(Math.random() * shoutingDucklings.length);
+    return shoutingDucklings[randomIndex];
+  };
+
   const handleCollision = (ducklingId: string) => {
     collisionSound.play();
     setDucklingPositions((prev) =>
       prev.filter((duckling) => duckling.id !== ducklingId)
     );
-    const collectedDucklings = ducklingPositions.find(
+    const collectedDuckling = ducklingPositions.find(
       (duckling) => duckling.id === ducklingId
     );
-    if (collectedDucklings) {
-      setCollectedDucklings((prev) => [...prev, collectedDucklings]);
+    if (collectedDuckling) {
+      setCollectedDucklings((prev) => [...prev, collectedDuckling]);
     }
   };
 
   const handleEating = () => {
     eatingSound.play();
+    setShoutMessage(getRandomShoutingDuckling());
+    setShoutVisible(true);
+
+    setTimeout(() => {
+      setShoutVisible(false);
+    }, 1000);
+
     setCollectedDucklings((prev) => {
       if (prev.length > 1) {
         return prev.slice(0, -1);
@@ -98,13 +141,12 @@ function App() {
 
   const handleButcherCollision = () => {
     butcherCollisionSound.play();
+    setShoutMessage(getRandomShoutingDuckling());
+    setShoutVisible(true);
 
-    if (collectedDucklings.length > 0) {
-      const randomIndex = Math.floor(Math.random() * collectedDucklings.length);
-      const ducklingToShout = collectedDucklings[randomIndex].id;
-
-      setShoutingDuckling(ducklingToShout);
-    }
+    setTimeout(() => {
+      setShoutVisible(false);
+    }, 1000);
 
     setCollectedDucklings((prev) => {
       if (prev.length > 1) {
@@ -116,16 +158,6 @@ function App() {
 
     setAddTime((prevAddTime) => prevAddTime + 5);
   };
-
-  useEffect(() => {
-    if (shoutingDuckling) {
-      const timer = setTimeout(() => {
-        setShoutingDuckling(null);
-      }, 1000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [shoutingDuckling]);
 
   useEffect(() => {
     const numberOfWolves = Math.floor((collectedDucklings.length - 1) / 3) + 1;
@@ -200,13 +232,17 @@ function App() {
                 addTime={addTime}
               />
             </div>
-
-            {shoutingDuckling && (
-              <div className="shouting-message">
-                <p>Mama, why?!</p>
+            {shoutVisible && collectedDucklings.length > 0 && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: mamaDuckPosition.y - 90,
+                  left: mamaDuckPosition.x - 40,
+                }}
+              >
+                <p>{shoutMessage}</p>
               </div>
             )}
-
           </>
         )}
       </div>
