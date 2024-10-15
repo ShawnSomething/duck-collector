@@ -9,7 +9,7 @@ export const Wolf: React.FC<{
 }> = ({ gameStarted, collectedDucklings, mamaDuckPosition, onEating, wolfIndex }) => {
   const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [eatingDuckling, setEatingDuckling] = useState(false);
-  const wolfSpeed = 1.8;
+  const wolfSpeed = 4;
   const stoppingDistance = 20;
 
   const offset = (wolfIndex % 2 === 0 ? 4 : -6) * (wolfIndex * 25);
@@ -58,7 +58,7 @@ export const Wolf: React.FC<{
       });
     };
 
-    const interval = setInterval(moveWolf, 5);
+    const interval = setInterval(moveWolf, 8);
 
     return () => clearInterval(interval);
   }, [gameStarted, collectedDucklings, mamaDuckPosition, eatingDuckling, onEating, offset]);
