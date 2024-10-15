@@ -9,7 +9,7 @@ export const Wolf: React.FC<{
 }> = ({ gameStarted, collectedDucklings, mamaDuckPosition, onEating, wolfIndex }) => {
   const [currentPosition, setCurrentPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [eatingDuckling, setEatingDuckling] = useState(false);
-  const wolfSpeed = 4;
+  const wolfSpeed = 3;
   const stoppingDistance = 20;
 
   const offset = (wolfIndex % 2 === 0 ? 4 : -6) * (wolfIndex * 25);
